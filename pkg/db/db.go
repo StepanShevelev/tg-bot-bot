@@ -8,6 +8,7 @@ import (
 	"html/template"
 	"image"
 	"image/jpeg"
+	"io"
 	"net/http"
 	"os"
 	"strconv"
@@ -209,6 +210,12 @@ func DownloadAndSavePic(fileName string, imgURL string) []byte {
 		UppendErrorWithPath(err)
 	}
 	defer file.Close()
+
+	_, err = io.Copy(file, response.Body)
+	if err != nil {
+		logrus.Info("Error occurred while updating post", err)
+		UppendErrorWithPath(err)
+	}
 
 	pic, _, err := image.Decode(file)
 

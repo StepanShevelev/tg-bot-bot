@@ -218,9 +218,17 @@ func DownloadAndSavePic(fileName string, imgURL string) []byte {
 	}
 
 	pic, _, err := image.Decode(file)
+	if err != nil {
+		logrus.Info("Error occurred while updating post", err)
+		UppendErrorWithPath(err)
+	}
 
 	buf := new(bytes.Buffer)
 	err = jpeg.Encode(buf, pic, nil)
+	if err != nil {
+		logrus.Info("Error occurred while updating post", err)
+		UppendErrorWithPath(err)
+	}
 	res := buf.Bytes()
 	return res
 }

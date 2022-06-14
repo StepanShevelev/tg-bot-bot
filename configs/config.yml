@@ -8,5 +8,5 @@ db:
   dbname: "postgres"
   sslmode: "disable"
 
-telegramBotToken : "5085408878:AAHleFLdsUiGZtHXdDbShPa6SPt2-IPOQTA"
-webhookURL : "https://10ba-81-23-5-2.eu.ngrok.io"
+telegramBotToken : " "
+webhookURL : " "

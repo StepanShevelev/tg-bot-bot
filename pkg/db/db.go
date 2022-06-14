@@ -1,10 +1,14 @@
 package db
 
 import (
+	"bytes"
 	"github.com/sirupsen/logrus"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"html/template"
+	"image"
+	"image/jpeg"
+	"net/http"
 	"os"
 	"strconv"
 	"strings"
@@ -181,11 +185,35 @@ func CreateHTML(title string, whoTookMe string) (string, error) {
 	post.WhoTookMe = whoTookMe
 	result := Database.Db.Save(&post)
 	if result.Error != nil {
-		logrus.Info("Error occurred while updating post", err)
+		logrus.Info("Error occurred while updating post", result.Error)
 		UppendErrorWithPath(result.Error)
 	}
 	replacer := strings.NewReplacer(" ", "", "/", "", ".", "", ",", "", "!", "", ":", "", "?", "")
 	txt := replacer.Replace(post.Title)
 	path := "./" + txt + ".html"
 	return path, nil
+}
+
+func DownloadAndSavePic(fileName string, imgURL string) []byte {
+
+	response, err := http.Get(imgURL)
+	if err != nil {
+		logrus.Info("Error occurred while updating post", err)
+		UppendErrorWithPath(err)
+	}
+	defer response.Body.Close()
+
+	file, err := os.Create(fileName + ".jpg")
+	if err != nil {
+		logrus.Info("Error occurred while updating post", err)
+		UppendErrorWithPath(err)
+	}
+	defer file.Close()
+
+	pic, _, err := image.Decode(file)
+
+	buf := new(bytes.Buffer)
+	err = jpeg.Encode(buf, pic, nil)
+	res := buf.Bytes()
+	return res
 }

@@ -1,14 +1,11 @@
 package db
 
 import (
-	"bytes"
 	"github.com/sirupsen/logrus"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"html/template"
-	"image"
-	"image/jpeg"
-	"io"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"strconv"
@@ -195,7 +192,7 @@ func CreateHTML(title string, whoTookMe string) (string, error) {
 	return path, nil
 }
 
-func DownloadAndSavePic(fileName string, imgURL string) []byte {
+func DownloadAndSavePic(imgURL string) []byte {
 
 	response, err := http.Get(imgURL)
 	if err != nil {
@@ -204,31 +201,35 @@ func DownloadAndSavePic(fileName string, imgURL string) []byte {
 	}
 	defer response.Body.Close()
 
-	file, err := os.Create(fileName + ".jpg")
+	//file, err := os.Create(fileName + ".jpg")
+	//if err != nil {
+	//	logrus.Info("Error occurred while updating post", err)
+	//	UppendErrorWithPath(err)
+	//}
+	//defer file.Close()
+	//
+	//_, err = io.Copy(file, response.Body)
+	//if err != nil {
+	//	logrus.Info("Error occurred while updating post", err)
+	//	UppendErrorWithPath(err)
+	//}
+	//
+	//pic, _, err := image.Decode(response.Body)
+	//if err != nil {
+	//	logrus.Info("Error occurred while updating post", err)
+	//	UppendErrorWithPath(err)
+	//}
+	res, err := ioutil.ReadAll(response.Body)
 	if err != nil {
 		logrus.Info("Error occurred while updating post", err)
 		UppendErrorWithPath(err)
 	}
-	defer file.Close()
-
-	_, err = io.Copy(file, response.Body)
-	if err != nil {
-		logrus.Info("Error occurred while updating post", err)
-		UppendErrorWithPath(err)
-	}
-
-	pic, _, err := image.Decode(file)
-	if err != nil {
-		logrus.Info("Error occurred while updating post", err)
-		UppendErrorWithPath(err)
-	}
-
-	buf := new(bytes.Buffer)
-	err = jpeg.Encode(buf, pic, nil)
-	if err != nil {
-		logrus.Info("Error occurred while updating post", err)
-		UppendErrorWithPath(err)
-	}
-	res := buf.Bytes()
+	//buf := new(bytes.Buffer)
+	//err = jpeg.Encode(buf, pic, nil)
+	//if err != nil {
+	//	logrus.Info("Error occurred while updating post", err)
+	//	UppendErrorWithPath(err)
+	//}
+	//res := buf.Bytes()
 	return res
 }
